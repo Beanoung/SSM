@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- MyBatis核心配置文件中的标签必须按照顺序
+(properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?,
+reflectorFactory?,plugins?,environments?,databaseIdProvider?,mappers?) -->
+
+    <!-- 引入properties文件,然后就可以在当前文件中通过的方式获取value -->
+    <properties resource="jdbc.properties"/>
+
+    <!-- 全局配置 -->
+    <settings>
+        <!-- 当字段名和属性名不一致时,将字段中的下划线映射为驼峰 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!--
+     typeAliases:设置类型别名,为某个具体的类型设置一个别名,
+     在MyBatis的范围内,就可以使用别名表示一个具体的类型,比如在UserMapper中的selectAllUser就使用了下面声明的别名
+     -->
+    <typeAliases>
+        <!--
+         type:设置需要起别名的类型
+         alias:别名   
+         -->
+        <!-- <typeAlias type="com.beanoung.mybatis.pojo.User" alias="abc"/> -->
+        <!-- 如果不设置,默认的别名就是类名,不区分大小写,比如下面的User/user -->
+        <!-- <typeAlias type="com.beanoung.mybatis.pojo.User"/> -->
+        <!-- 当数据过多的时候,通过包来设置类型别名,指定包下的所有的类型全部拥有默认的别名 -->
+        <package name="com.beanoung.ssm.pojo"/>
+    </typeAliases>
+
+
+    <!-- 分页插件 -->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+    </plugins>
+
+
+    <!--
+    environments:配置连接数据库的环境
+    default:设置为要使用的环境的id
+    -->
+    <environments default="development">
+        <!--
+        environment:设置一个具体的连接数据库的环境
+        id:唯一标识,不能重复
+         -->
+        <environment id="development">
+            <!--
+            transactionManager:设置事务管理器
+            type:设置事务管理的方式      只有两种,   JDBC表示使用jdbc原生的事务管理方式,  MANAGED表示被管理,比如被spring管理
+             -->
+            <transactionManager type="JDBC"/>
+            <!--
+             dataSource:设置数据源
+             type:设置数据源类型       只有三种,   POOLED表示使用数据库连接     UNPOOLED表示不使用数据库连接  JNDI表示使用上下文中的数据源
+             -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+
+        <!-- 如果有第二个环境,可以配置 -->
+        <environment id="test">
+            <transactionManager type=""></transactionManager>
+            <dataSource type=""></dataSource>
+        </environment>
+    </environments>
+
+    <!-- 引入mybatis的映射文件 -->
+    <mappers>
+        <!-- 普通引入方式,当数据过多的时候应当用包的方式引入 -->
+        <!-- <mapper resource="mappers/UserMapper.xml"/> -->
+        <!-- 通过包的方式引入映射文件,必须满足两个条件:1.mapper接口和映射文件所在的包一致 2.mapper接口的名字和映射文件的名字一致 -->
+        <!-- 这里在resources下创建com/beanoung/mybatis/mapper文件目录,然后把mapper里的文件放到该目录下,
+         以后映射文件也都创建在该目录下-->
+        <package name="com.beanoung.ssm.mapper"/>
+    </mappers>
+
+</configuration>
